@@ -18,6 +18,7 @@
 
 require("dotenv").config(); // import .env so we can get the token
 const Discord = require("discord.js");
+const client = new Discord.Client();
 const fs = require('fs');
 const serverId = 728297305312329862;  // this is so jank but the better way is much harder
 const specialChannelIds = [
@@ -27,10 +28,18 @@ const specialChannelIds = [
     728297305551405156, // #ranting-venting
     744135238103597097, // #m
 ];
+const logChannel = 806680464022175774; // #dick-kicking-zone
+
+var isKlaxonOn = true;
+var klaxonBoard;
+var currentKlaxon = "";
+var lastKlaxon;
+var waitingForKlaxon = false;
+
 fs.readFile("klaxon.txt", "utf-8", (err, data) => {
-    var klaxonBoard = data.split("\n");
-    var currentKlaxon = file[0];
-    var lastKlaxon = file[1];
+    klaxonBoard = data.split("\n");
+    currentKlaxon = klaxonBoard[0];
+    lastKlaxon = klaxonBoard[1];
     klaxonBoard.splice(0, 2);
 });
 
@@ -43,7 +52,12 @@ client.on("ready", () => {
     console.log("Initialization Complete.");
 });
 client.on("message", (message) => {
-    processMessage(message);
+    if (message.author.bot) return;
+    if (message.guild === null) {
+        if (waitingForKlaxon) {
+            setKlaxon(message)
+        } 
+    } else processMessage(message);
 });
 
 /**
@@ -57,6 +71,7 @@ function processMessage(message) {
     } else if (message.channel.id === specialChannelIds[5]) {
         //mAnageMEnt(message) TODO
     } else {
+        console.log("message read as pot claxon \n" + message)
         klaxon(message);
     }
 }
@@ -75,12 +90,15 @@ function processCommand(message) {
  */
 function klaxon(message) {
     if (klaxonCheck(message.content)) {
-        if (specialChannelIds.includes(message.channel.id)) {
-           // ignore klaxon
-        } else {   
-            //TODO: klaxon code
-        }
-    }
+        if (specialChannelIds.includes(message.channel.id)) return;  //is it in a no-no channel? 
+        console.log("got here")
+        //TODO: klaxon code
+        if (message.author.bot || !isKlaxonOn) return;
+        message.channel.send("> `" + message.content + "`\nKLAXON WORD: " + currentKlaxon + "\n" + message.member.user.username + " -10 Points LOL!");
+        isKlaxonOn = false;
+        dmKlaxon(message);
+        
+    } else console.log("bruh how")
 }
 
 /**
@@ -88,12 +106,49 @@ function klaxon(message) {
  * @param {string} message - message to be checked
  */
 function klaxonCheck(message) {
+    let active = false;
+    console.log("a")
     let splitMessage = message.split(" ");
+    console.log("b")
     splitMessage.forEach(element => {
-        if (element === currentKlaxon) return true;
+        console.log("c " + (element === currentKlaxon) + " " + element + " " +currentKlaxon)
+        if (element.toLowerCase().replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ") === currentKlaxon.toLowerCase().replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ")) active = true; // strips all punctuation and makes the word lowercase on both sides
     });
-    return false;
+    if (active) return true;
+    else return false;
 }
+
+/**
+ * dmKlaxon() - DMs the user and recieves the new klaxon.
+ * @param {object} message - the message of the klaxon.
+ */
+function dmKlaxon(message) {
+    client.users.cache.get(message.author.id).send("Set the new klaxon by DMing me back. If you do not set it the bot breaks (for now) \nAs a common courtesy for others, keep the klaxon reasonable. Remember, you are trying to get others to trigger it!");
+    waitingForKlaxon = true;
+}
+
+/**
+ * setKlaxon() - sets the new klaxon.
+ * @param {object} message - the message containing the new klaxon
+ */
+function setKlaxon(message) {
+    if (/^\~/g.test(message.content)) {
+        client.users.cache.get(message.author.id).send("Invalid string: Contains the bot's prefix");
+        return;
+    } else {
+        currentKlaxon = message.content; 
+        waitingForKlaxon = false;
+        console.log("lol!");
+        isKlaxonOn = true;
+        fs.writeFile("klaxon.txt", message.content, function (err) {
+            if (err) {
+                console.log("lmao");
+            }
+        });
+    }
+}
+
+
 
 // login stuffs (idk how this works but it hides the bot token so :shrug:)
 client.login(process.env.TOKEN);
