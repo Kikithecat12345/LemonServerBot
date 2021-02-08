@@ -1,0 +1,23 @@
+{
+  "name": "lemonserverbot",
+  "version": "1.0.0",
+  "description": "Bot for the Lemon Discord Server",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kikithecat12345/LemonServerBot.git"
+  },
+  "author": "Kiki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kikithecat12345/LemonServerBot/issues"
+  },
+  "homepage": "https://github.com/kikithecat12345/LemonServerBot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0"
+  }
+}
