@@ -50,7 +50,7 @@ client.on("ready", () => {
     console.log("LOL ONIONS!");
     console.log("Initializing...");
     // ANCHOR: init code here if needed
-    client.user.setActivity("Blan's Birthday!", { type: 'STREAMING' });
+    client.user.setActivity("Blan's Birthday!", { type: 'COMPETING' });
     console.log("Initialization Complete.");
 });
 client.on("message", (message) => {
