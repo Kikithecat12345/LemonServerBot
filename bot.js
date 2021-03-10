@@ -35,6 +35,7 @@ var klaxonBoard;
 var currentKlaxon = "";
 var lastKlaxon;
 var waitingForKlaxon = false;
+var timer;
 
 fs.readFile("klaxon.txt", "utf-8", (err, data) => {
     klaxonBoard = data.split("\n");
@@ -128,8 +129,19 @@ function klaxonCheck(message) {
  * @param {object} message - the message of the klaxon.
  */
 function dmKlaxon(message) {
-    client.users.cache.get(message.author.id).send("Set the new klaxon by DMing me back. If you do not set it the bot breaks (for now) \nAs a common courtesy for others, keep the klaxon reasonable. Remember, you are trying to get others to trigger it!");
-    waitingForKlaxon = true;
+    client.users.cache.get(message.author.id).send("Set the new klaxon by DMing me back. If you do not set it in 10 minutes it defaults to \"test\" \nAs a common courtesy for others, keep the klaxon reasonable. Remember, you are trying to get others to trigger it!");
+    waitingForKlaxon = message.author.id;
+    timer = setTimeout( () => {
+        client.users.cache.get(waitingForKlaxon).send("Welp, you ran out of time. LOL!");
+        waitingForKlaxon = false;
+        isKlaxonOn = true;
+        currentKlaxon = "test"
+        fs.writeFile("klaxon.txt", currentKlaxon, function (err) {
+            if (err) {
+                console.log("lmao");
+            }
+        });
+    }, 600000);
 }
 
 /**
@@ -137,23 +149,26 @@ function dmKlaxon(message) {
  * @param {object} message - the message containing the new klaxon
  */
 function setKlaxon(message) {
-    if (/^\~/g.test(message.content)) {
-        client.users.cache.get(message.author.id).send("Invalid string: Contains the bot's prefix.");
-        return;
-    } else if (!/^[a-zA-Z]*$/.test(message.content)) {
-        client.users.cache.get(message.author.id).send("Invalid string: a-Z characters allowed only.");
-        return;
-    } else {
-        currentKlaxon = message.content; 
-        waitingForKlaxon = false;
-        console.log("lol!");
-        isKlaxonOn = true;
-        fs.writeFile("klaxon.txt", message.content, function (err) {
-            if (err) {
-                console.log("lmao");
-            }
-        });
-        client.users.cache.get(message.author.id).send("Klaxon: ACTIVE");
+    if (message.author.id = waitingForKlaxon) {
+        if (/^\~/g.test(message.content)) {
+            client.users.cache.get(message.author.id).send("Invalid string: Contains the bot's prefix.");
+            return;
+        } else if (!/^[a-zA-Z]*$/.test(message.content)) {
+            client.users.cache.get(message.author.id).send("Invalid string: a-Z characters allowed only.");
+            return;
+        } else {
+            clearTimeout(timer);
+            currentKlaxon = message.content; 
+            waitingForKlaxon = false;
+            console.log("lol!");
+            isKlaxonOn = true;
+            fs.writeFile("klaxon.txt", message.content, function (err) {
+                if (err) {
+                    console.log("lmao");
+                }
+            });
+            client.users.cache.get(message.author.id).send("Klaxon: ACTIVE");
+        }
     }
 }
 
