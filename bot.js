@@ -49,6 +49,7 @@ client.on("ready", () => {
     console.log("LOL ONIONS!");
     console.log("Initializing...");
     // ANCHOR: init code here if needed
+    client.user.setActivity("test", { type: 'WATCHING' });
     console.log("Initialization Complete.");
 });
 client.on("message", (message) => {
@@ -58,6 +59,10 @@ client.on("message", (message) => {
             setKlaxon(message)
         } 
     } else processMessage(message);
+     if (message.content.toLowerCase().indexOf("cum") >= 0) {
+        message.react("😋");
+    } 
+    
 });
 
 /**
@@ -133,7 +138,10 @@ function dmKlaxon(message) {
  */
 function setKlaxon(message) {
     if (/^\~/g.test(message.content)) {
-        client.users.cache.get(message.author.id).send("Invalid string: Contains the bot's prefix");
+        client.users.cache.get(message.author.id).send("Invalid string: Contains the bot's prefix.");
+        return;
+    } else if (!/^[a-zA-Z]*$/.test(message.content)) {
+        client.users.cache.get(message.author.id).send("Invalid string: a-Z characters allowed only.");
         return;
     } else {
         currentKlaxon = message.content; 
@@ -145,6 +153,7 @@ function setKlaxon(message) {
                 console.log("lmao");
             }
         });
+        client.users.cache.get(message.author.id).send("Klaxon: ACTIVE");
     }
 }
 
