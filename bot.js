@@ -65,6 +65,9 @@ client.on("message", (message) => {
     } 
     
 });
+client.on("error", () => {
+    setStatus();
+});
 
 /**
  * processMessage() - Processes the messages being sent by users.
@@ -149,7 +152,6 @@ function dmKlaxon(message) {
  */
 function setStatus() {
     client.user.setActivity("Blan's Birthday!", { type: 'COMPETING' });
-    var timeout = setTimeout(setStatus(), 600000);
 }
 
 /**
