@@ -50,7 +50,7 @@ client.on("ready", () => {
     console.log("LOL ONIONS!");
     console.log("Initializing...");
     // ANCHOR: init code here if needed
-    client.user.setActivity("Blan's Birthday!", { type: 'COMPETING' });
+    setStatus();
     console.log("Initialization Complete.");
 });
 client.on("message", (message) => {
@@ -142,6 +142,14 @@ function dmKlaxon(message) {
             }
         });
     }, 600000);
+}
+
+/**
+ * setStatus() - Starts the status loop
+ */
+function setStatus() {
+    client.user.setActivity("Blan's Birthday!", { type: 'COMPETING' });
+    var timeout = setTimeout(setStatus(), 600000);
 }
 
 /**
