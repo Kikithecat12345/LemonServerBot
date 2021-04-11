@@ -17,6 +17,8 @@
  */
 
 require("dotenv").config(); // import .env so we can get the token
+const videoshow = require("videoshow");
+const text2png = require('text2png');
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const fs = require('fs');
@@ -61,7 +63,7 @@ client.on("message", (message) => {
         } 
     } else processMessage(message);
      if (message.content.toLowerCase().indexOf("cum") >= 0) {
-        message.react("😋");
+        message.react("😋").catch(message.channel.send("😋"));
     } 
     
 });
@@ -103,10 +105,16 @@ function klaxon(message) {
         console.log("got here")
         //TODO: klaxon code
         if (message.author.bot || !isKlaxonOn) return;
-        message.channel.send("> `" + message.content + "`\nKLAXON WORD: " + currentKlaxon + "\n" + message.member.user.username + " -10 Points LOL!");
+        message.channel.send("> `" + message.content + "`\nKLAXON WORD: " + currentKlaxon + "\n" + message.member.user.username + " -10 Points LOL!", {
+            files:[{
+                attachment: "klaxon.mp4",
+                name: "klaxon.mp4"
+            }]
+        });
         isKlaxonOn = false;
         dmKlaxon(message);
-        
+       
+
     } else console.log("bruh how")
 }
 
@@ -178,6 +186,33 @@ function setKlaxon(message) {
                 }
             });
             client.users.cache.get(message.author.id).send("Klaxon: ACTIVE");
+            fs.writeFileSync("klaxon.png", text2png(currentKlaxon.toUpperCase(), {
+                textAlign: "center",
+                color: "white",
+                bgColor: "black",
+                font: "200px Franklin Gothic",
+                padding: 460
+            }));
+            fs.writeFileSync("klaxonblack.png", text2png(currentKlaxon.toUpperCase(), {
+                textAlign: "center",
+                color: "black",
+                bgColor: "black",
+                font: "200px Franklin Gothic",
+                padding: 460
+            }));
+            videoshow(["klaxon.png","klaxonblack.png","klaxon.png","klaxonblack.png","klaxon.png","klaxonblack.png","klaxon.png","klaxonblack.png","klaxon.png","klaxonblack.png","klaxon.png"],{
+                fps: 30,
+                loop: 0.5, // seconds
+                transition: false,
+                videoBitrate: 1024,
+                videoCodec: 'libx264',
+                size: '640x?',
+                audioBitrate: '128k',
+                disableFadeIn: true,
+                disableFadeOut: true,
+                audioChannels: 2,
+                format: 'mp4'
+              }).audio("klaxon.ogg", {fade: false}).save("klaxon.mp4");
         }
     }
 }
