@@ -4,6 +4,8 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
+RUN apt-get install ffmpeg -y
+
 RUN npm install
 RUN npm audit fix
 
