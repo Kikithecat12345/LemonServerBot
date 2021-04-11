@@ -1,4 +1,4 @@
-FROM node:14
+FROM melon/debian-for-discord-vc
 
 WORKDIR /usr/src/app
 
@@ -10,6 +10,7 @@ RUN npm install
 RUN npm audit fix
 
 COPY . .
+COPY FranklinGothic.ttf /usr/share/fonts
 
 EXPOSE 8080
 CMD [ "npm", "start" ]
