@@ -20,6 +20,7 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "ffmpeg": "^0.0.4",
+    "lru-cache": "^6.0.0",
     "text2png": "^2.3.0",
     "videoshow": "^0.1.12"
   }
