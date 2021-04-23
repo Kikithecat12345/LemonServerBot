@@ -179,13 +179,11 @@ function setKlaxon(message) {
             currentKlaxon = message.content; 
             waitingForKlaxon = false;
             console.log("lol!");
-            isKlaxonOn = true;
             fs.writeFile("klaxon.txt", message.content, function (err) {
                 if (err) {
                     console.log("lmao");
                 }
             });
-            client.users.cache.get(message.author.id).send("Klaxon: ACTIVE");
             fs.writeFileSync("klaxon.png", text2png(currentKlaxon.toUpperCase(), {
                 textAlign: "center",
                 color: "white",
@@ -212,7 +210,16 @@ function setKlaxon(message) {
                 disableFadeOut: true,
                 audioChannels: 2,
                 format: 'mp4'
-              }).audio("klaxon.ogg", {fade: false}).save("klaxon.mp4");
+            }).audio("klaxon.ogg", {
+                fade: false
+            }).save("klaxon.mp4").on('start', function (command) {
+                client.users.cache.get(message.author.id).send(`Preparing new klaxon`);
+            }).on('error', function (err, stdout, stderr) {
+                client.users.cache.get(message.author.id).send("Error: failed to generate video for your word");
+            }).on('end', function (output) {
+                isKlaxonOn = true;
+                client.users.cache.get(message.author.id).send(`Klaxon: ACTIVE (${output})`);
+            });
         }
     }
 }
