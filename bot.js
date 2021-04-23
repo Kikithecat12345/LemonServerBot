@@ -63,7 +63,7 @@ client.on("message", (message) => {
         } 
     } else processMessage(message);
      if (message.content.toLowerCase().indexOf("cum") >= 0) {
-        message.react("😋").catch(message.channel.send("😋"));
+        message.react("😋").catch(()=>{message.channel.send("😋")});
     } 
     
 });
