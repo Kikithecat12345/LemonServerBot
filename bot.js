@@ -62,8 +62,9 @@ client.on("message", (message) => {
             setKlaxon(message)
         } 
     } else processMessage(message);
-     if (message.content.toLowerCase().indexOf("cum") >= 0) {
-        message.react("😋").catch(()=>{message.channel.send("😋")});
+    // replace regex just removes non-alphanumeric and _
+    if (message.content.toLowerCase().replace(/[\W_]+/g, ' ').split(' ').includes("cum")) {
+        message.react("😋").catch();
     } 
     
 });
